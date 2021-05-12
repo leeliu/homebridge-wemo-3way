@@ -3,7 +3,7 @@ const log = require('./lib/log')
 
 const DISCOVER_INITIAL_INTERVAL = 15000
 const DISCOVER_INITIAL_ATTEMPTS = 6 // attempt 6 times at 15s each then 300s
-const DISCOVER_INTERVAL = 300000
+const DISCOVER_INTERVAL = 120000
 const REFRESH_ENABLED = true
 const REFRESH_INTERVAL = 60000
 const REPORT_ENABLED = true
@@ -14,15 +14,12 @@ const devices = {}
 let discoverCount = 0
 
 const discoverDevices = () => {
-  log.info('Discovering new devices...')
+  log.info('Discovering devices...')
   wemo.discover((err, deviceInfo) => {
     if (err) {
       if (err.code !== 'ECONNRESET') console.log(err)
       return
     }
-
-    // already discovered? skip
-    if (devices[deviceInfo.serialNumber]) return
 
     const name = deviceName(deviceInfo)
     const client = wemo.client(deviceInfo)
@@ -49,6 +46,14 @@ const discoverDevices = () => {
       setTimeout(() => {
         refreshBinaryState(client, deviceInfo)
       }, REFRESH_INTERVAL)
+    }
+
+    // mark existing device as old/offline
+    if (devices[deviceInfo.serialNumber]) {
+      devices[deviceInfo.serialNumber].old = true
+      log.trace(`${name}: Old device replaced by new discovery`)
+      // console.log(devices[deviceInfo.serialNumber])
+      // console.log(deviceInfo)
     }
 
     // add to devices
@@ -87,8 +92,25 @@ const handleBinaryState = (client, deviceInfo, value, refresh) => {
 
 const refreshBinaryState = (client, deviceInfo) => {
   const name = deviceName(deviceInfo)
+  if (deviceInfo.old) {
+    return log.trace(`${name}: Old device removed from refresh`)
+  }
   client.getBinaryState((err, value) => {
-    if (err) return // errors already surfaced in main on error handler
+    if (err) {
+      // device offline?
+      if (err.code === 'ECONNREFUSED' || err.code === 'EHOSTUNREACH' || err.code === 'ETIMEDOUT') {
+        // stop refreshing this device by returning early
+        return log.trace(`${name}: Device removed from refresh`)
+      }
+
+      // refresh next interval
+      setTimeout(() => {
+        refreshBinaryState(client, deviceInfo)
+      }, REFRESH_INTERVAL)
+      return
+    }
+
+    // value changed without our knowledge?
     if (deviceInfo.binaryState !== value) {
       log.warn(
         `Updated: ${name} from ${deviceInfo.binaryState === '1' ? 'ON' : 'OFF'} to ${
@@ -96,15 +118,18 @@ const refreshBinaryState = (client, deviceInfo) => {
         }`
       )
     }
+
     handleBinaryState(client, deviceInfo, value, true)
+
+    // refresh next interval
+    setTimeout(() => {
+      refreshBinaryState(client, deviceInfo)
+    }, REFRESH_INTERVAL)
   })
-  setTimeout(() => {
-    refreshBinaryState(client, deviceInfo)
-  }, REFRESH_INTERVAL)
 }
 
 const deviceName = (deviceInfo) => {
-  return `[${deviceInfo.serialNumber.substring(deviceInfo.serialNumber.length - 4)} ${
+  return `[${deviceInfo.serialNumber} ${
     deviceInfo.hwVersion || 'v1'
   } ${deviceInfo.modelName.replace('LightSwitch', 'Switch')}] ${deviceInfo.friendlyName}`
 }
