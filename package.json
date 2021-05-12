@@ -1,0 +1,30 @@
+{
+  "name": "homebridge-wemo-3way",
+  "version": "1.0.0",
+  "description": "Homebridge plugin to turn 2 Wemo switches (1 with load, 1 w/o) into a software 3 way switch",
+  "main": "index.js",
+  "dependencies": {
+    "wemo-client": "^0.15.0",
+    "pino": "^6.11.1",
+    "pino-pretty": "^4.5.0"
+  },
+  "devDependencies": {
+    "eslint": "^7.26.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "prettier": "^2.3.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "homebridge-plugin",
+    "Wemo",
+    "3 way",
+    "three way",
+    "dimmer",
+    "switch"
+  ],
+  "author": "Lee Liu",
+  "license": "MIT"
+}
