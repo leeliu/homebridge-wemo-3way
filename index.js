@@ -78,7 +78,7 @@ const handleBinaryState = (client, deviceInfo, value, refresh) => {
 
   // dont show initial state during discovery
   if (deviceInfo.seen) {
-    if (!refresh) log.info(`${name}: ${value === '1' ? 'ON' : 'OFF'}`)
+    if (!refresh && changed) log.info(`${name}: ${value === '1' ? 'ON' : 'OFF'}`)
   } else {
     deviceInfo.seen = true
   }
