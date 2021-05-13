@@ -6,7 +6,7 @@ const DISCOVER_INITIAL_ATTEMPTS = 6 // attempt 6 times at 15s each then 120s
 const DISCOVER_INTERVAL = 120000
 const REFRESH_ENABLED = true
 const REFRESH_INTERVAL = 60000
-const REPORT_ENABLED = true
+const REPORT_ENABLED = (process.env.REPORT_ENABLED && !!+process.env.REPORT_ENABLED) || false
 const REPORT_INTERVAL = 5000
 const IGNORED_DEVICES =
   (process.env.IGNORED_DEVICES && process.env.IGNORED_DEVICES.toUpperCase().split(',')) || []
