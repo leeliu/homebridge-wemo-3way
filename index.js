@@ -2,24 +2,29 @@ const Wemo = require('wemo-client')
 const log = require('./lib/log')
 
 const DISCOVER_INITIAL_INTERVAL = 15000
-const DISCOVER_INITIAL_ATTEMPTS = 6 // attempt 6 times at 15s each then 300s
+const DISCOVER_INITIAL_ATTEMPTS = 6 // attempt 6 times at 15s each then 120s
 const DISCOVER_INTERVAL = 120000
 const REFRESH_ENABLED = true
 const REFRESH_INTERVAL = 60000
 const REPORT_ENABLED = true
 const REPORT_INTERVAL = 5000
+const IGNORED_DEVICES =
+  (process.env.IGNORED_DEVICES && process.env.IGNORED_DEVICES.toUpperCase().split(',')) || []
 
 const wemo = new Wemo()
 const devices = {}
 let discoverCount = 0
 
 const discoverDevices = () => {
-  log.info('Discovering devices...')
+  log.debug('Discovering devices...')
   wemo.discover((err, deviceInfo) => {
     if (err) {
       if (err.code !== 'ECONNRESET') console.log(err)
       return
     }
+
+    // ignore IGNORED_DEVICES
+    if (~IGNORED_DEVICES.indexOf(deviceInfo.serialNumber)) return
 
     const name = deviceName(deviceInfo)
     const client = wemo.client(deviceInfo)
