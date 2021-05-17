@@ -1,0 +1,150 @@
+{
+  "pluginAlias": "Wemo 3-Way",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "This plugin lets you create software-based 3-way (or multi-way switches) using Wemo devices. Generally, you need to have a switch that controls a load (ie: lights/fan) and another switch (that may or may not have its load wire connected). This plugin will sync ON/OFF state for both switches, so you can the turn the load ON or OFF from either switch. Usually, there are 2 devices in a 3-way switch set, though 3+ devices (4-way) in a set is supported as well. Also, this plugin avoids loops and mis-syncs through periodic refresh.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "switches": {
+        "title": "3-Way Switch Set",
+        "type": "array",
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "discoverInitialAttempts": {
+        "title": "Initial Discovery Attempts",
+        "type": "integer",
+        "description": "Wemo discovery needs to be on a more frequent interval at startup to ensure all devices are discovered.",
+        "placeholder": "6"
+      },
+      "discoverInitialInterval": {
+        "title": "Initial Discovery Interval",
+        "type": "integer",
+        "description": "By default, attempt 6 times at 15s each then fallback to every 120s.",
+        "placeholder": "15000"
+      },
+      "discoverInterval": {
+        "title": "Regular Discovery Interval",
+        "type": "integer",
+        "description": "Regular discovery interval (in ms) after initial attempts",
+        "placeholder": "120000"
+      },
+      "refreshEnabled": {
+        "title": "Refresh Devices Periodically",
+        "type": "boolean",
+        "description": "Enabled by default. Sometimes light switches fail to report updated state, this'll manually poll each device to ensure state is correct.",
+        "default": true
+      },
+      "refreshInterval": {
+        "title": "Refresh Interval",
+        "type": "integer",
+        "description": "Interval (in ms) to manually poll each device's state",
+        "placeholder": "60000"
+      },
+      "ignoredDevices": {
+        "title": "Ignored Devices",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "switchesOnly": {
+        "title": "Only Monitor 3-Way Switch Sets",
+        "type": "boolean",
+        "description": "Disabled by default, which shows ON/OFF activity for all Wemo devices in Homebridge logs (may be useful for debugging or just general logging of Wemo activity in your house). Enable this to only monitor devices belonging to a 3-way switch set.",
+        "default": false
+      },
+      "raceTimeout": {
+        "title": "Race Timeout",
+        "type": "integer",
+        "description": "When you turn on a switch in a 3-way switch set, it'll turn on the other switch, which normally will trigger the original switch. This timeout (in ms) prevents that loop from occurring. By default, this plugin will ignore ON/OFF from the other switch for 5s. If this results in a mis-sync, the refresh interval will sync all switches in a set to the primary again within 60s (default value).",
+        "placeholder": "5000"
+      }
+    }
+  },
+  "layout": [
+    {
+      "type": "fieldset",
+      "flex-flow": "row wrap",
+      "items": [
+        {
+          "key": "switches",
+          "type": "array",
+          "items": [
+            {
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "title": "Switches",
+                  "description": "3-Way Switch Set",
+                  "type": "array",
+                  "minItems": 2,
+                  "items": [
+                    {
+                      "type": "div",
+                      "displayFlex": true,
+                      "flex-direction": "row",
+                      "items": [
+                        {
+                          "key": "switches[][]",
+                          "placeholder": "XXXXXXXXXXXXXX",
+                          "title": "Switch Serial Number"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "help",
+          "helpvalue": "<p>Each 3-way switch set should have 2 (or more) switches. The 1st switch in each set is considered the primary (controls load/lights). For example, my Hallway Dimmer (serial number: 241746K1504004) has lights, is specified 1st, then my Hallway Switch (serial number: 2299A029N01D80) has no load connected, is 2nd. You can find the serial numbers of all your Wemo devices during discovery in Homebridge logs.</p>"
+        }
+      ]
+    },
+    {
+      "type": "fieldset",
+      "title": "Optional Configuration",
+      "expandable": true,
+      "items": [
+        "discoverInitialAttempts",
+        "discoverInitialInterval",
+        "discoverInterval",
+        "refreshEnabled",
+        "refreshInterval",
+        {
+          "key": "ignoredDevices",
+          "type": "array",
+          "items": [
+            {
+              "type": "div",
+              "displayFlex": true,
+              "flex-direction": "row",
+              "items": [
+                {
+                  "key": "ignoredDevices[]",
+                  "placeholder": "XXXXXXXXXXXXXX"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "help",
+          "helpvalue": "<p>Some devices such as the v4 socket plug frequently disconnect/reconnect. If they're not a part of a 3-way switch set, you can ignore them here to avoid log spam.</p>"
+        },
+        "switchesOnly",
+        "raceTimeout"
+      ]
+    }
+  ]
+}
