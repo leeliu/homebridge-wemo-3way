@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "Wemo 3-Way",
+  "pluginAlias": "Wemo3Way",
   "pluginType": "platform",
   "singular": true,
   "headerDisplay": "This plugin lets you create software-based 3-way (or multi-way switches) using Wemo devices. Generally, you need to have a switch that controls a load (ie: lights/fan) and another switch (that may or may not have its load wire connected). This plugin will sync ON/OFF state for both switches, so you can the turn the load ON or OFF from either switch. Usually, there are 2 devices in a 3-way switch set, though 3+ devices (4-way) in a set is supported as well. Also, this plugin avoids loops and mis-syncs through periodic refresh.",
