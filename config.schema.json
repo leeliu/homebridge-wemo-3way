@@ -64,6 +64,12 @@
         "type": "integer",
         "description": "When you turn on a switch in a 3-way switch set, it'll turn on the other switch, which normally will trigger the original switch. This timeout (in ms) prevents that loop from occurring. By default, this plugin will ignore ON/OFF from the other switch for 5s. If this results in a mis-sync, the refresh interval will sync all switches in a set to the primary again within 60s (default value).",
         "placeholder": "5000"
+      },
+      "syncTimeout": {
+        "title": "Sync Timeout",
+        "type": "integer",
+        "description": "When you turn on a switch in a 3-way switch set, it'll turn on the other switch. This timeout (in ms) ensures the other switch responds in time. By default, this plugin will mark the other switch as dead if it doesn't respond for 5s, which causes new discovery and will resubscribe to events.",
+        "placeholder": "5000"
       }
     }
   },

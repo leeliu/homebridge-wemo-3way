@@ -53,6 +53,10 @@ Option | Type | Default | Explanation
 `ignoredDevices` | `array` | `[]` | Some devices such as the v4 socket plug frequently disconnect/reconnect. If they're not a part of a 3-way switch set, you can ignore them here to avoid log spam.
 `switchesOnly` | `bool` | `false` | Disabled by default, which shows ON/OFF activity for all Wemo devices in Homebridge logs (may be useful for debugging or just general logging of Wemo activity in your house). Enable this to only monitor devices belonging to a 3-way switch set.
 `raceTimeout` | `integer` | `5000` | When you turn on a switch in a 3-way switch set, it'll turn on the other switch, which normally will trigger the original switch. This timeout (in ms) prevents that loop from occurring. By default, this plugin will ignore ON/OFF from the other switch for 5s. If this results in a mis-sync, the refresh interval will sync all switches in a set to the primary again within 60s (default value).
+`syncTimeout` | `integer` | `5000` | When you turn on a switch in a 3-way switch set, it'll turn on the other switch. This timeout (in ms) ensures the other switch responds in time. By default, this plugin will mark the other switch as dead if it doesn't respond for 5s, which causes new discovery and will resubscribe to events.
+
+## TODO
+* Allows multiple dimmers in a 3-way set and sync brightness across each set
 
 ## License
 MIT
